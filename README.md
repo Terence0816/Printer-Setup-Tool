@@ -1,3 +1,5 @@
+![下載量](https://img.shields.io/github/downloads/Terence0816/Printer-Setup-Tool/total?label=下載量&color=2ea44f)
+
 萬用印表機自動部署工具 (All-in-One Printer Deployment Tool)
 PrtEasySetup 是一個輕量化、自動化的印表機部署工具，專為 IT 管理員與 MSP 服務商設計。它解決了繁瑣的驅動程式 INF 解析問題，並將「設定檔建立」、「驅動安裝」、「設定備份與還原」整合在一個執行檔中。
 
