@@ -97,17 +97,6 @@ ip, [IP or USB Port], [Printer Name], [Driver Name], [INF File], [Flags]
 
 ---
 
-### 🛠️ Packaging Notes
-
-When converting the PowerShell script to EXE with Win-PS2EXE, the following options are recommended:
-
-- `-noConsole`: Hide the black console window.
-- `-requireAdmin`: Request administrator privileges at runtime.
-
-For testing, it is recommended not to enable `-noOutput` or `-noError` until the program is confirmed working.
-
----
-
 ### ⚠️ Note
 
 This tool is packaged from PowerShell. Some antivirus software or Windows Defender SmartScreen may display an "uncommon app" warning.
@@ -218,22 +207,6 @@ PrtEasySetup.exe
 ```text
 ip, [IP或USB埠], [印表機名稱], [驅動名稱], [INF檔案名稱], [參數標記]
 ```
-
----
-
-### 🛠️ 封裝建議
-
-使用 Win-PS2EXE 將 PowerShell 轉成 EXE 時，建議啟用：
-
-- `-noConsole`：隱藏執行時的黑色 CMD 視窗。
-- `-requireAdmin`：執行時要求系統管理員權限。
-
-測試階段建議先不要啟用：
-
-- `-noOutput`
-- `-noError`
-
-等確認程式正常後，正式版再啟用即可。
 
 ---
 
