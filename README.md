@@ -8,109 +8,242 @@
 
 ## 🇺🇸 English Introduction
 
-**PrtEasySetup** is a lightweight, automated printer deployment utility designed for **IT Administrators** and **Managed Service Providers (MSPs)**. It solves the tedious problem of parsing driver INF files and integrates "Profile Creation," "Driver Installation," and "Settings Backup/Restore" into a single executable.
+**PrtEasySetup** is a lightweight printer deployment utility designed for **IT Administrators** and **Managed Service Providers (MSPs)**. It helps package printer driver installation, TCP/IP or USB port creation, printer profile generation, and printer preference backup/restore into a single portable executable.
 
 ### ✨ Key Features
-* **Smart INF Parsing:** Built-in parsing engine optimized for major brands like **HP, Epson, Brother, Kyocera, TSC**, etc. It automatically filters out noise (e.g., Fax drivers, Utility drivers) to precisely identify printer models.
-* **Automated Installation:** One-click automation for creating TCP/IP or USB ports, registering drivers (using `printui` force install technique for high success rates), and adding printers.
-* **Settings Backup & Restore:** Capable of backing up detailed printer preferences (Duplex, Tray Selection, Color/BW) and automatically restoring them during deployment (`set.dat`) to ensure consistency across all users.
-* **Path Aware:** Supports running directly from **Network Shares (NAS/Server)**, automatically handling permission and path issues.
-* **Portable:** No installation required. Runs from a single EXE file.
+
+- **Smart INF Parsing**: Scans printer driver INF files and helps identify the correct printer model.
+- **Automated Installation**: Creates TCP/IP or USB printer ports, installs drivers, and adds printers automatically.
+- **Install Confirmation**: When `ip.ini` already exists, the tool shows the printer name, port/IP, and INF driver file before installation.
+- **Default Printer Prompt**: Lets the user choose whether to set the printer as the default printer before installation starts.
+- **Reinstall Handling**: Detects existing printers with the same name and lets the user choose whether to reinstall.
+- **Settings Backup & Restore**: Supports exporting and importing printer preferences with `set.dat`.
+- **Windows 11 Friendly**: Opens the traditional **Devices and Printers** Control Panel page after installation.
+- **Portable**: No installation required. Runs as a single EXE file.
 
 ### 🚀 Quick Start
 
 #### 1. Preparation
-Place `PrtEasySetup.exe` in the same folder as your printer driver files (`.inf`, `.dll`, `.cat`, etc.).
 
-#### 2. Execution
+Place `PrtEasySetup.exe` in the same folder as your printer driver files, such as `.inf`, `.dll`, `.cat`, and related driver files.
+
+#### 2. Run as Administrator
+
 Run `PrtEasySetup.exe` as **Administrator**.
 
-#### Scenario A: First Run (Profile Creation)
-If running for the first time in the folder, the tool detects no `ip.ini` and guides you through setup.
+---
 
-1.  **Input Connection Info:** Enter the Printer IP. For USB printers, type `usb` (auto-detects virtual USB port).
-    <br><img width="269" src="https://github.com/user-attachments/assets/3cc10cf4-bae9-4c52-b364-64932f30a361" />
-2.  **Select Model:** The tool scans INF files. Select your specific model if multiple are found.
-    <br><img width="327" src="https://github.com/user-attachments/assets/ef97e697-3504-4b70-af85-a23af356e633" />
-3.  **Confirm & Install:** Profile `ip.ini` is created. Click "Yes" to deploy immediately.
-    <br><img width="177" src="https://github.com/user-attachments/assets/64c14a35-5a24-411a-a25c-6de755a25d34" />
+### Scenario A: First Run - Create `ip.ini`
 
-#### Scenario B: Quick Deployment (Existing Profile)
-If `ip.ini` already exists, the tool skips setup and **installs immediately**. Ideal for mass deployment via login scripts or RMM.
+If `ip.ini` does not exist, the tool guides you through creating a printer deployment profile.
 
-#### Scenario C: Maintenance & Backup
-* **Backup:** If the printer is installed but `set.dat` is missing, it asks to backup current settings (Paper size, Watermarks, etc.).
-* **Restore:** If `set.dat` exists, it applies these settings automatically after installation.
+1. **Input Connection Info**  
+   Enter the printer IP address. For USB printers, enter `usb`.
+
+2. **Select Printer Model**  
+   The tool scans INF files in the current folder. If multiple models are found, select the correct printer model.
+
+3. **Create Profile**  
+   The tool creates `ip.ini` and shows the detected printer name and connection information.
+
+4. **Install Printer**  
+   The tool asks whether to install the printer immediately.
+
+---
+
+### Scenario B: Existing `ip.ini` - Deploy Printer
+
+If `ip.ini` already exists, the tool reads the saved profile and shows an installation confirmation dialog before deployment.
+
+The confirmation dialog displays:
+
+- Printer name
+- Port / IP address
+- INF driver file
+
+After confirming installation, the tool asks whether to set the printer as the default printer, then starts installation.
+
+---
+
+### Scenario C: Printer Already Installed
+
+If the same printer already exists on the computer, the tool will ask whether to reinstall it.
+
+- Choose **Yes** to remove and recreate the printer, port, and driver setup.
+- Choose **No** to continue to the `set.dat` backup/restore workflow.
+
+---
+
+### Scenario D: Backup or Restore Printer Settings
+
+- If the printer is installed and `set.dat` does not exist, the tool can back up the current printer preferences.
+- If `set.dat` exists, the tool can import and apply those saved printer preferences.
+
+This is useful for keeping settings such as paper size, tray selection, duplex, color/BW, and other printing preferences consistent across computers.
+
+---
 
 ### 📂 File Structure
-* **`PrtEasySetup.exe`**: Main Application.
-* **`ip.ini`**: Auto-generated config file. Format: `ip, [IP/USB], [Printer Name], [Driver Name], [INF File], [Flags]`
-* **`set.dat`**: (Optional) Binary backup of printer preferences generated by `rundll32 printui.dll`.
+
+- **`PrtEasySetup.exe`**: Main application.
+- **`ip.ini`**: Printer deployment profile.
+- **`set.dat`**: Optional printer preference backup file generated by `printui.dll`.
+
+Example `ip.ini` format:
+
+```text
+ip, [IP or USB Port], [Printer Name], [Driver Name], [INF File], [Flags]
+```
+
+---
+
+### 🛠️ Packaging Notes
+
+When converting the PowerShell script to EXE with Win-PS2EXE, the following options are recommended:
+
+- `-noConsole`: Hide the black console window.
+- `-requireAdmin`: Request administrator privileges at runtime.
+
+For testing, it is recommended not to enable `-noOutput` or `-noError` until the program is confirmed working.
+
+---
 
 ### ⚠️ Note
-* This tool is wrapped from PowerShell. Some Antivirus software (e.g., Windows Defender SmartScreen) might flag it as "Uncommon".
-* The file is digitally signed with a valid **OV Code Signing Certificate**. Please add it to your trust list if blocked.
+
+This tool is packaged from PowerShell. Some antivirus software or Windows Defender SmartScreen may display an "uncommon app" warning.
 
 ---
 
 ## 🇹🇼 繁體中文介紹
 
-**PrtEasySetup** 是一個輕量化、自動化的印表機部署工具，專為 IT 管理員與 MSP 服務商設計。它解決了繁瑣的驅動程式 INF 解析問題，並將「設定檔建立」、「驅動安裝」、「設定備份與還原」整合在一個執行檔中。
+**PrtEasySetup** 是一個輕量化的印表機部署工具，適合 **IT 管理員**、**MSP 維護商** 或需要大量安裝印表機的環境使用。它可以將印表機驅動安裝、TCP/IP 或 USB 連接埠建立、設定檔建立、列印偏好設定備份/還原，整合成單一可攜式 EXE 執行檔。
 
 ### ✨ 主要功能
-* **智慧 INF 解析**：內建針對 HP、Epson、Brother、Kyocera、TSC 等品牌的專用解析引擎，能自動過濾雜訊（如 Utility、Fax 驅動），精準抓取印表機型號。
-* **自動化安裝**：一鍵完成 TCP/IP 或 USB 連接埠建立、驅動程式註冊 (使用 `printui` 暴力安裝技術，確保成功率) 及印表機新增。
-* **設定備份與還原**：可備份印表機的細部設定（如單/雙面、紙匣選擇、黑白/彩色），並在部署時自動還原 (`set.dat`)，確保所有使用者設定一致。
-* **路徑感知**：支援從網路共用資料夾 (NAS/Server Share) 直接執行，自動處理權限與路徑問題。
-* **簡單易用**：無須安裝，單一 EXE 檔案即可運作。
+
+- **智慧 INF 解析**：自動掃描印表機驅動 INF 檔，協助抓取正確印表機型號。
+- **自動化安裝**：自動建立 TCP/IP 或 USB 連接埠、安裝驅動程式並新增印表機。
+- **安裝前確認**：當 `ip.ini` 已存在時，安裝前會顯示印表機名稱、連接埠/IP、INF 驅動檔資訊。
+- **預設印表機確認**：安裝前可由使用者選擇是否設定為預設印表機。
+- **已安裝偵測**：偵測到同名印表機已存在時，可選擇是否重新安裝。
+- **設定備份與還原**：支援透過 `set.dat` 備份與匯入印表機偏好設定。
+- **Windows 11 相容改善**：安裝完成後會開啟傳統「裝置和印表機」控制台頁面。
+- **免安裝可攜式工具**：單一 EXE 即可執行，不需要額外安裝程式。
+
+---
 
 ### 🚀 快速開始
 
 #### 1. 準備工作
-將 `PrtEasySetup.exe` 與印表機的驅動程式檔案（.inf, .dll, .cat 等）放在同一個資料夾中。
+
+將 `PrtEasySetup.exe` 與印表機驅動程式檔案放在同一個資料夾中，例如：
+
+```text
+PrtEasySetup.exe
+*.inf
+*.dll
+*.cat
+其他驅動相關檔案
+```
 
 #### 2. 執行程式
-以「系統管理員身分」執行 `PrtEasySetup.exe`。
 
-#### 情境 A：初次建立設定檔
-如果是第一次在該資料夾執行，程式會偵測不到 `ip.ini`，並引導您建立。
-
-1.  **輸入連線資訊**： 輸入印表機的 IP 位址，如果是 USB 印表機，請輸入 `usb` (程式會自動偵測對應埠口)。
-    <br><img width="269" src="https://github.com/user-attachments/assets/3cc10cf4-bae9-4c52-b364-64932f30a361" />
-2.  **選擇型號**： 程式會自動掃描目錄下的 INF 檔。如果包含多個型號，會跳出選單供您選擇。
-    <br><img width="327" src="https://github.com/user-attachments/assets/ef97e697-3504-4b70-af85-a23af356e633" />
-3.  **確認設定**： 設定檔 `ip.ini` 建立完成，視窗會顯示解析出的型號與連接埠。
-    <br><img width="174" src="https://github.com/user-attachments/assets/4fd98b1c-471b-4721-8001-1504a936bb40" />
-4.  **立即安裝**： 程式會詢問是否立即進行安裝，點選「是」即可開始部署。
-    <br><img width="177" src="https://github.com/user-attachments/assets/64c14a35-5a24-411a-a25c-6de755a25d34" />
-    <br><img width="392" src="https://github.com/user-attachments/assets/d3107cdc-be3a-41b4-9ca2-a7ccb8a7be2b" />
-
-#### 情境 B：快速部署 (已有設定檔)
-當資料夾內已經存在 `ip.ini` 時，執行程式將自動跳過設定步驟，直接讀取設定並開始安裝印表機。這非常適合大量部署到客戶端電腦。
-
-#### 情境 C：維護與備份
-* **備份設定**：如果偵測到電腦已安裝該印表機，但資料夾內沒有 `set.dat`，程式會詢問是否備份目前的設定（包含紙張、浮水印等進階設定）。
-* **還原設定**：如果偵測到 `set.dat` 存在，安裝完畢後會自動將設定還原到印表機。
-
-### 📂 檔案說明
-* **`PrtEasySetup.exe`**: 主程式。
-* **`ip.ini`**: 自動生成的設定檔，格式如下：
-    `ip, [IP或USB埠], [印表機名稱], [驅動名稱], [INF檔案名稱], [參數標記]`
-    <br><img width="305" src="https://github.com/user-attachments/assets/e2194ea8-ed73-4da8-b364-840aea65a62d" />
-* **`set.dat`**: (選用) 印表機設定的二進位備份檔，由 `rundll32 printui.dll` 生成。
-
-### 🛠️ 技術細節
-本工具使用 PowerShell 編寫並封裝為 Win32 應用程式。核心技術包括：
-* **Windows SetupAPI 模擬**：模擬 Windows 讀取 INF 的邏輯，支援 `[Strings]` 變數替換與 `[Manufacturer]` 區段鎖定，解決 Epson/Brother 等特殊 INF 結構解析錯誤的問題。
-* **PrintUI.dll 整合**：使用微軟官方 `rundll32 printui.dll,PrintUIEntry /ia` 指令進行驅動安裝，比 PowerShell 的 `Add-PrinterDriver` 更穩定且支援度更高。
-
-### ⚠️ 注意事項
-* 由於本程式是由 PowerShell 封裝而成，某些防毒軟體 (如 Windows Defender SmartScreen) 可能會誤判為不明軟體。
-* 本程式已通過基本的 **OV 程式碼簽章 (Code Signing)**，建議加入信任清單以確保執行順利。
+請使用 **系統管理員身分** 執行 `PrtEasySetup.exe`。
 
 ---
 
-### 🎥 Demo Video (示範影片)
+### 情境 A：第一次執行，建立 `ip.ini`
+
+如果資料夾內沒有 `ip.ini`，程式會引導建立印表機部署設定檔。
+
+1. **輸入連線資訊**  
+   輸入印表機 IP 位址；如果是 USB 印表機，請輸入 `usb`。
+
+2. **選擇印表機型號**  
+   程式會掃描目前資料夾內的 INF 檔。如果找到多個型號，會讓使用者選擇正確型號。
+
+3. **建立設定檔**  
+   程式會產生 `ip.ini`，並顯示解析出的印表機名稱與連接埠資訊。
+
+4. **立即安裝**  
+   程式會詢問是否立即安裝印表機。
+
+---
+
+### 情境 B：已有 `ip.ini`，快速部署印表機
+
+如果資料夾內已經存在 `ip.ini`，程式會讀取設定檔並在安裝前跳出確認視窗。
+
+確認視窗會顯示：
+
+- 印表機名稱
+- 連接埠 / IP 位址
+- INF 驅動檔
+
+使用者確認後，程式會再詢問是否設定為預設印表機，選擇後才開始安裝。
+
+---
+
+### 情境 C：偵測到印表機已安裝
+
+如果本機已經安裝同名印表機，程式會詢問是否重新安裝。
+
+- 選擇 **是**：移除同名印表機後，重新建立連接埠、驅動與印表機。
+- 選擇 **否**：進入 `set.dat` 備份或還原流程。
+
+---
+
+### 情境 D：備份或還原印表機設定
+
+- 如果印表機已安裝，但資料夾內沒有 `set.dat`，程式會詢問是否備份目前印表機設定。
+- 如果資料夾內已有 `set.dat`，程式會詢問是否匯入並套用設定。
+
+這適合用來統一部署：
+
+- 紙張大小
+- 紙匣選擇
+- 單面 / 雙面
+- 黑白 / 彩色
+- 其他列印偏好設定
+
+---
+
+### 📂 檔案說明
+
+- **`PrtEasySetup.exe`**：主程式。
+- **`ip.ini`**：印表機部署設定檔。
+- **`set.dat`**：選用的印表機偏好設定備份檔，由 `printui.dll` 匯出。
+
+`ip.ini` 格式範例：
+
+```text
+ip, [IP或USB埠], [印表機名稱], [驅動名稱], [INF檔案名稱], [參數標記]
+```
+
+---
+
+### 🛠️ 封裝建議
+
+使用 Win-PS2EXE 將 PowerShell 轉成 EXE 時，建議啟用：
+
+- `-noConsole`：隱藏執行時的黑色 CMD 視窗。
+- `-requireAdmin`：執行時要求系統管理員權限。
+
+測試階段建議先不要啟用：
+
+- `-noOutput`
+- `-noError`
+
+等確認程式正常後，正式版再啟用即可。
+
+---
+
+### ⚠️ 注意事項
+
+由於本工具是由 PowerShell 封裝而成，部分防毒軟體或 Windows Defender SmartScreen 可能會顯示不常見程式提醒。
+
+---
+
+### 🎥 Demo Video 示範影片
 
 [![PrtEasySetup Demo](https://img.youtube.com/vi/0kGA7q_k9NA/0.jpg)](https://www.youtube.com/watch?v=0kGA7q_k9NA)
 
